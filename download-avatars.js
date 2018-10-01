@@ -1,19 +1,27 @@
 var request = require('request');
-var token = require('./secrets.js')['GITHUB_TOKEN'];
+// var token = require('./secrets.js')['GITHUB_TOKEN'];
 var fs = require('fs');
+
+const env = require('dotenv').config()
+
+const USERNAME = env.parsed['USERNAME'];
+const TOKEN = env.parsed['GITHUB_TOKEN'];
+
 
 function getRepoContributors(repoOwner, repoName, cb) {
 
   let options = {
     url : "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
-      'User-Agent': 'AnaelBerrouet',
-      'Authorization': 'token ' + token
+      'User-Agent': 'USERNAME',
+      'Authorization': 'token ' + TOKEN
     }
   };
   console.log("requesting from",options.url);
   request(options, function(err, res, body) {
-
+    if(err) {
+      console.log("Request Error:",err);
+    }
     cb(err, JSON.parse(body));
 
   });
