@@ -1,5 +1,6 @@
 var request = require('request');
 var token = require('./secrets.js')['GITHUB_TOKEN'];
+var fs = require('fs');
 
 console.log('Welcome to the GitHub Avatar Downloader!');
 
@@ -20,31 +21,40 @@ function getRepoContributors(repoOwner, repoName, cb) {
   });
 }
 
+function downloadImageByURL(url, filePath) {
+
+  request.get(url)
+  .on('err', function(err){
+    console.log("Error:",err);
+  })
+  .on('response', function(response) {
+    console.log("Response status:",response.statusCode);
+    if(response.statusCode===200){
+      console.log("Downloading from " + url);
+    }
+  })
+  .pipe(fs.createWriteStream(filePath)
+    .on('finish', function() {
+      console.log("Download", filePath, "complete");
+    })
+  );
+}
+
+//Test the whole system
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
-  result.forEach(function(element, index) {
-    console.log(`Contributor: ${index}`, element['avatar_url']);
+
+  //create avatar directory if not already available
+  fs.stat("avatars", function(err, stat) {
+    if(err) {
+      console.log("creating directory 'avatars'...");
+      fs.mkdir("./avatars/");
+    }
   });
 
+  result.forEach(function(element, index) {
+    downloadImageByURL(element['avatar_url'], "avatars/" + element['login'] + ".gif");
+  });
 });
 
 
-// const fs = require('fs');
-// const request = require('request');
-
-// const URL = 'https://sytantris.github.io/http-examples/future.jpg';
-
-// request.get(URL)
-//   .on('err', function(err) {
-//     console.log(err);
-//   })
-//   .on('response', function(response) {
-//     console.log("Response status:",response.statusCode);
-//     if(response.statusCode===200){
-//       console.log("Downloading...");
-//     }
-//   })
-//   .pipe(fs.createWriteStream('./future.jpg')
-//     .on('finish', function() {
-//     console.log("Download complete.");
-//   }));
