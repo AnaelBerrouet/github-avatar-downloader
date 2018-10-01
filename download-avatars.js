@@ -23,7 +23,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
   result.forEach(function(element, index) {
-    console.log(`Contributor: ${index}`, element);
+    console.log(`Contributor: ${index}`, element['avatar_url']);
   });
 
 });
