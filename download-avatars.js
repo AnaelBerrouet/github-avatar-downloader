@@ -10,7 +10,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
     url : "https://api.github.com/repos/" + repoOwner + "/" + repoName + "/contributors",
     headers: {
       'User-Agent': 'request',
-      Authorization: token
+      'Authorization': token
     }
   };
 
@@ -44,6 +44,8 @@ function downloadImageByURL(url, filePath) {
 getRepoContributors("jquery", "jquery", function(err, result) {
   console.log("Errors:", err);
 
+  console.log(result);
+
   //create avatar directory if not already available
   fs.stat("avatars", function(err, stat) {
     if(err) {
@@ -54,6 +56,8 @@ getRepoContributors("jquery", "jquery", function(err, result) {
 
   result.forEach(function(element, index) {
     downloadImageByURL(element['avatar_url'], "avatars/" + element['login'] + ".gif");
+
+    // console.log(`Contributor: ${index}`, element['avatar_url']);
   });
 });
 
