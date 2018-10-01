@@ -2,8 +2,6 @@ var request = require('request');
 var token = require('./secrets.js')['GITHUB_TOKEN'];
 var fs = require('fs');
 
-console.log('Welcome to the GitHub Avatar Downloader!');
-
 function getRepoContributors(repoOwner, repoName, cb) {
 
   let options = {
@@ -13,7 +11,7 @@ function getRepoContributors(repoOwner, repoName, cb) {
       'Authorization': token
     }
   };
-
+  console.log("requesting from",options.url);
   request(options, function(err, res, body) {
 
     cb(err, JSON.parse(body));
@@ -40,19 +38,28 @@ function downloadImageByURL(url, filePath) {
   );
 }
 
-//Test the whole system
-getRepoContributors("jquery", "jquery", function(err, result) {
-  console.log("Errors:", err);
+//MAIN
+var args = process.argv.slice(2);
 
-  console.log(result);
+console.log('Welcome to the GitHub Avatar Downloader!');
+
+if(!args[0] || !args[1]) {
+  console.log("Please enter valid arguments: <repo-owner> <repo>");
+  process.exit();
+}
 
   //create avatar directory if not already available
-  fs.stat("avatars", function(err, stat) {
-    if(err) {
+  try {
+    fs.statSync("avatars");
+  } catch(err) {
       console.log("creating directory 'avatars'...");
       fs.mkdir("./avatars/");
-    }
-  });
+  }
+
+
+getRepoContributors(args[0], args[0], function(err, result) {
+  console.log("Errors:", err);
+
 
   result.forEach(function(element, index) {
     downloadImageByURL(element['avatar_url'], "avatars/" + element['login'] + ".gif");
