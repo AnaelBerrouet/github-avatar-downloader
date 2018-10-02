@@ -4,7 +4,6 @@ var fs = require('fs');
 
 const env = require('dotenv').config();
 
-
 //Async function to generate HTTP request to github api in order to obtain a list of contributors to a provided repo
 function getRepoContributors(repoOwner, repoName, cb) {
 
@@ -81,7 +80,6 @@ try {
   TOKEN = "";
 }
 
-
 //Check if avatar directory is not already available----------------
 try {
   fs.statSync("avatars");
@@ -89,7 +87,6 @@ try {
     console.log("creating directory 'avatars'...");
     fs.mkdir("./avatars/");
 }
-
 
 //Try and get REPO contributors and save avatars--------------------
 getRepoContributors(args[0], args[1], function(err, result) {
